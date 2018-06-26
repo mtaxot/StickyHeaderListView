@@ -112,7 +112,11 @@ class PinedListViewAdapter extends PinedAdapter{
         mData.addAll(data);
     }
 
+    public void deleteTitle(int position){
 
+        mData.remove(position);
+        notifyDataSetChanged();
+    }
     @Override
     public boolean isPined(int position) {
         int pinedType = mData.get(position).viewType;
@@ -147,7 +151,7 @@ class PinedListViewAdapter extends PinedAdapter{
     }
 
     @Override
-    public View getPinedView(int position, View convertView, ViewGroup parent) {
+    public View getPinedView(final int position, View convertView, ViewGroup parent) {
         /**
          * You must use the convertView.setTag&getTag to optimize.
          */
@@ -185,7 +189,8 @@ class PinedListViewAdapter extends PinedAdapter{
             holder.button.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Toast.makeText(mContext, "hi", Toast.LENGTH_SHORT).show();
+                    //deleteTitle(position);
+                    Toast.makeText(mContext, "remove", Toast.LENGTH_SHORT).show();
                 }
             });
         }

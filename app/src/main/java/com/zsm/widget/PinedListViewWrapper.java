@@ -5,6 +5,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 
+import android.util.Log;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ListView;
@@ -138,7 +139,23 @@ public class PinedListViewWrapper extends FrameLayout{
                     cachedPinedView.setLayoutParams(mlp);
                     addView(cachedPinedView);
                 }else{
-                    cachedPinedView = adapter.getPinedView(pinedPos, cachedPinedView, this);
+                    View v = adapter.getPinedView(pinedPos, cachedPinedView, this);
+                    if(cachedPinedView != v){
+                        /**
+                         * if you don't use convertView.setTag to optimize,
+                         * just we give you a warning, but you lose the performance
+                         * you see, the following code?? if you don't they will be executed times.
+                         */
+                        Log.w(PinedListViewWrapper.class.getSimpleName(),
+                                "if you don't use convertView.setTag to optimize, you lose the performance");
+                        mCache.put(pinedType, v);
+                        removeView(cachedPinedView);
+                        MarginLayoutParams mlp = createDefaultPinedViewLayoutParam();
+                        v.setLayoutParams(mlp);
+                        addView(v);
+
+                    }
+                    cachedPinedView = v;
                 }
                 if(mCurrentPinedView != null && mCurrentPinedView.getVisibility() == View.VISIBLE){
                     mCurrentPinedView.setVisibility(View.GONE);

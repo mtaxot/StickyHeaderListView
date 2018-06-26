@@ -66,6 +66,8 @@ public abstract class PinedAdapter extends BaseAdapter{
     }
 
 
+
+
     /**
      * subclass is not required to implement this method,
      * instead, override getNormalView & getPinedView
@@ -80,4 +82,6 @@ public abstract class PinedAdapter extends BaseAdapter{
 
         return convertView;
     }
+
+
 }
