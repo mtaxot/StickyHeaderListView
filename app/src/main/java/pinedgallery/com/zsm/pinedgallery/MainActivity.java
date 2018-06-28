@@ -1,8 +1,13 @@
 package pinedgallery.com.zsm.pinedgallery;
 
 import android.content.Context;
+import android.os.Build;
+import android.os.Parcel;
+import android.os.Parcelable;
+import android.os.PersistableBundle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,19 +19,36 @@ import com.zsm.widget.PinedAdapter;
 import com.zsm.widget.PinedListViewWrapper;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
-
+    private List<PinedData> mList;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if(savedInstanceState == null){
+            mList = prepareTestData();
+        }else{
+            mList = savedInstanceState.getParcelableArrayList("list_items");
+        }
         setContentView(R.layout.activity_main);
+
         PinedListViewWrapper pl = (PinedListViewWrapper) findViewById(R.id.pined_listview);
-        PinedAdapter pinedAdapter = new PinedListViewAdapter(this, prepareTestData());
+        PinedAdapter pinedAdapter = new PinedListViewAdapter(this, mList);
         pl.getListView().setAdapter(pinedAdapter);
+
+        //Build.FINGERPRINT
     }
 
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        outState.putParcelableArrayList("list_items", (ArrayList<PinedData>) mList);
+        super.onSaveInstanceState(outState);
+
+    }
 
     private List<PinedData> prepareTestData(){
         List<PinedData> list = new ArrayList<>();
@@ -77,16 +99,108 @@ public class MainActivity extends AppCompatActivity {
     }
 }
 
-class PinedData{
+class PinedData implements Parcelable{
     public int viewType;
+
+    protected PinedData(Parcel in) {
+        viewType = in.readInt();
+    }
+    protected PinedData() {
+    }
+
+    public static final Creator<PinedData> CREATOR = new Creator<PinedData>() {
+        @Override
+        public PinedData createFromParcel(Parcel in) {
+            return new PinedData(in);
+        }
+
+        @Override
+        public PinedData[] newArray(int size) {
+            return new PinedData[size];
+        }
+    };
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(viewType);
+    }
 }
 
 class PinedTitleData extends PinedData{
     public String title;
+
+    protected PinedTitleData(Parcel in) {
+        super(in);
+        title = in.readString();
+    }
+    protected PinedTitleData() {
+
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        super.writeToParcel(dest, flags);
+        dest.writeString(title);
+    }
+
+    @Override
+    public int describeContents() {
+        return super.describeContents();
+    }
+
+    public static final Creator<PinedTitleData> CREATOR = new Creator<PinedTitleData>() {
+        @Override
+        public PinedTitleData createFromParcel(Parcel in) {
+            return new PinedTitleData(in);
+        }
+
+        @Override
+        public PinedTitleData[] newArray(int size) {
+            return new PinedTitleData[size];
+        }
+    };
 }
+
+
 
 class ContentData extends PinedData{
     public String message;
+
+    protected ContentData(Parcel in) {
+        super(in);
+        message = in.readString();
+    }
+    protected ContentData() {
+    }
+
+    public static final Creator<ContentData> CREATOR = new Creator<ContentData>() {
+        @Override
+        public ContentData createFromParcel(Parcel in) {
+            return new ContentData(in);
+        }
+
+        @Override
+        public ContentData[] newArray(int size) {
+            return new ContentData[size];
+        }
+    };
+
+
+    @Override
+    public int describeContents() {
+        return super.describeContents();
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        super.writeToParcel(dest, flags);
+        dest.writeString(message);
+    }
 }
 
 class TitleViewHolder{
@@ -109,7 +223,8 @@ class PinedListViewAdapter extends PinedAdapter{
     private List<PinedData> mData = new ArrayList<>();
     public PinedListViewAdapter(Context context, List<PinedData> data){
         mContext = context;
-        mData.addAll(data);
+        mData = data;
+
     }
 
     public void deleteTitle(int position){
@@ -189,7 +304,7 @@ class PinedListViewAdapter extends PinedAdapter{
             holder.button.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    //deleteTitle(position);
+                    deleteTitle(position);
                     Toast.makeText(mContext, "remove", Toast.LENGTH_SHORT).show();
                 }
             });

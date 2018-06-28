@@ -1,6 +1,7 @@
 package com.zsm.widget;
 
 import android.content.Context;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
@@ -12,6 +13,8 @@ import android.widget.ListView;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import pinedgallery.com.zsm.pinedgallery.R;
 
 
 /**
@@ -32,6 +35,7 @@ public class PinedListViewWrapper extends FrameLayout{
 
     private Map<Integer, View> mCache;
 
+
     public PinedListViewWrapper(@NonNull Context context) {
         super(context);
         init(context);
@@ -51,6 +55,7 @@ public class PinedListViewWrapper extends FrameLayout{
         mCache = new HashMap<>();
         //construct a listview, so that it fills up the whole wrapper.
         mWrappedListView = new PinedListView(context);
+        mWrappedListView.setId(R.id.pined_list_view_id);
         MarginLayoutParams mlp = new MarginLayoutParams(MarginLayoutParams.MATCH_PARENT,
                 MarginLayoutParams.MATCH_PARENT);
         mlp.leftMargin = 0;
